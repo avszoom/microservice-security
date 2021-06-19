@@ -8,6 +8,6 @@ public class HomeResource {
 
     @GetMapping("/")
     public String getHomePage(){
-        return "<h1>Hello</h1>";
+        return "<h1>Spring security taking over.....</h1>";
     }
 }
