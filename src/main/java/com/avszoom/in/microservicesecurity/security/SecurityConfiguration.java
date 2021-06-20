@@ -1,5 +1,6 @@
 package com.avszoom.in.microservicesecurity.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -8,6 +9,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.sql.DataSource;
 import java.beans.BeanProperty;
 
 /*
@@ -19,21 +21,39 @@ import java.beans.BeanProperty;
 * */
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    DataSource dataSource;
+
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-                .withUser("blah")
-                .password("blah")
-                .roles("USER")
-                .and()
-                .withUser("foo")
-                .password("foo")
-                .roles("ADMIN")
-                .and()
-                .withUser("any")
-                .password("any")
-                .roles("ANYONE");
+//        auth.inMemoryAuthentication()
+//                .withUser("blah")
+//                .password("blah")
+//                .roles("USER")
+//                .and()
+//                .withUser("foo")
+//                .password("foo")
+//                .roles("ADMIN")
+//                .and()
+//                .withUser("any")
+//                .password("any")
+//                .roles("ANYONE");
 
+        /*
+        *  Authenticating with JDBC and using H2 in memory database , so telling spring how to fetch user details and its
+        *  authorization status from custom tables we have defined.
+        * */
+            auth.jdbcAuthentication()
+                .dataSource(dataSource)
+                .usersByUsernameQuery("select username,password,enabled "
+                        + "from USER "
+                        + "where username = ?"
+                )
+                .authoritiesByUsernameQuery("select username,authority "
+                        + " from AUTHORIZATION "
+                        + " where username = ? "
+                );
     }
 
     /*
@@ -43,10 +63,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers("/admin")
-                .hasRole("ADMIN")
-                .antMatchers("/user")
-                .hasAnyRole("ADMIN","USER")
+                .antMatchers("/admin").hasRole("ADMIN")
+                .antMatchers("/user").hasAnyRole("ADMIN","USER")
                 .antMatchers("/**").permitAll()
                 .and()
                 .formLogin();

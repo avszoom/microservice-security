@@ -67,3 +67,15 @@ Request -> DelegatingFilterProxy -> AuthenticationFilter -> AuthenticationManage
 
 Once user is succesful authenticated user principal object(Authenticate object) is stored in Security context or associated with current
 Session. SO that user doesnt has to authenticate for every other request.
+
+
+JDBC Authentication -
+
+If we do not specify or configure any particular database and just tell authentication manager that we want to use jdbc based authentication
+and we have some data store it will by default create an H2 in memory database. We can provide schema of databse using schema.sql file
+which spring boot reads and create schema in datastore.
+Similarily to add data in db we can put some data in data.sql which spring reads and insert when it starts.
+
+WHen we create schema for authentication we need to take care that spring need to get 3 fields username,password and if user is enabled
+also in case of authorization username and role. Now it doesn't matter how we store it. But query that we specify in manager should be
+able to fetch these.
