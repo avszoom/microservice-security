@@ -12,7 +12,8 @@ import java.beans.BeanProperty;
 
 /*
 * So this configuration class extends WebSecurityConfigurerAdapter and spring security calls configure method and provide
-* AuthenticationManagerBuilder which we can use to create our own AuthenticationManager.
+* AuthenticationManagerBuilder which we can use to create our own AuthenticationManager instance. This manager instance once
+* configured invokes default providers present in spring boot based on what type of authentication it is default is form Login.
 *
 * Annotation tell spring security that use this bean to handle web security
 * */
